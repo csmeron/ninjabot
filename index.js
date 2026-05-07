@@ -11,8 +11,10 @@ const { token } = require('./config.json');
 // `GatewayIntentBits.Guilds` ensures caches are populated and available
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// Create a collection to track commands
+// Create a collection to track commands,
+// as well as one for cooldowns.
 client.commands = new Collection();
+client.cooldowns = new Collection();
 // foldersPath scans for command categories, commandFolders
 // checks for command files in said paths
 const foldersPath = path.join(__dirname, 'commands');
@@ -34,14 +36,19 @@ for (const folder of commandFolders) {
   }
 }
 
-// Event Handler
+// Event Handler, functions more or less
+// the same as the command handler.
 const eventsPath = path.join(__dirname, 'events');
-const eventsFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith('.js'));
+const eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith('.js'));
 
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
   const event = require(filePath);
-
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args));
+  }
 }
 
 

@@ -14,10 +14,19 @@ module.exports = {
       return interaction.reply(`There is no command with the name \`${commandName}\`!`);
     }
 
-    delete require.cache[require.resolve(`./${command.data.name}.js`)];
+    // Get the file path from require.cache
+    const commandFilePath = Object.keys(require.cache).find(
+      (path) => require.cache[path].exports === command,
+    );
+
+    if (!commandFilePath) {
+      return interaction.reply(`Could not find the file path for command \`${commandName}\`!`);
+    }
+
+    delete require.cache[commandFilePath];
 
     try {
-      const newCommand = require(`./${command.data.name}.js`);
+      const newCommand = require(commandFilePath);
       interaction.client.commands.set(newCommand.data.name, newCommand);
       await interaction.reply(`Command \`${newCommand.data.name}\` was reloaded!`);
     } catch (error) {

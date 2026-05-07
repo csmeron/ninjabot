@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 // Require the necessary Discord.js classes and the bot's token
-const { Client, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Events, GatewayIntentBits, Collection } = require('discord.js');
 const { token } = require('./config.json');
 
 
@@ -35,7 +35,7 @@ for (const folder of commandFolders) {
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
     const command = require(filePath);
-    // Set a new item in the Collection with they key as the cmd name and the value as the exported module
+    // Set a new item in the Collection with the key as the cmd name and the value as the exported module
     if ('data' in command && 'execute' in command) {
       client.commands.set(command.data.name, command);
     }
@@ -44,3 +44,34 @@ for (const folder of commandFolders) {
     }
   }
 }
+
+client.on(Events.InteractionCreate, (interaction) => {
+  // Ignore if interaction is not a command
+  if (!interaction.isChatInputCommand()) return;
+  // Get matching commands based off interaction.commandName
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  // If no command found, log an error
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found`);
+    return;
+  }
+
+  // Call the command's execute method and log errors that occur
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+      console.error(error);
+      if (interaction.replied || interaction.deferred) {
+        await interaction.followUp({
+          content: 'There was an error while executing this command!',
+          flags: MessageFlags.Ephemeral,
+        });
+      } else {
+        await interaction.reply({
+          content: 'There was an error while executing this command!',
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+  }
+});

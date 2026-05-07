@@ -45,7 +45,7 @@ for (const folder of commandFolders) {
   }
 }
 
-client.on(Events.InteractionCreate, (interaction) => {
+client.on(Events.InteractionCreate, async (interaction) => {
   // Ignore if interaction is not a command
   if (!interaction.isChatInputCommand()) return;
   // Get matching commands based off interaction.commandName

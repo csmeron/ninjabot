@@ -4,11 +4,13 @@ module.exports = [
 	js.configs.recommended,
 	{
      languageOptions: {
-      ecmaVersion: 'latest',
+       parserOptions: {
+         ecmaVersion: 2022,
+         sourceType: 'module', // enables top-level await (just to make it not stand out in this project)
+       },
     },
 		rules: {
 			'arrow-spacing': ['warn', { before: true, after: true }],
-			'brace-style': ['error', 'stroustrup', { allowSingleLine: true }],
 			'comma-dangle': ['error', 'always-multiline'],
 			'comma-spacing': 'error',
 			'comma-style': 'error',
@@ -21,7 +23,6 @@ module.exports = [
 			'no-console': 'off',
 			'no-empty-function': 'error',
 			'no-floating-decimal': 'error',
-			'no-inline-comments': 'error',
 			'no-lonely-if': 'error',
 			'no-multi-spaces': 'error',
 			'no-multiple-empty-lines': ['error', { max: 4, maxEOF: 1, maxBOF: 0 }],

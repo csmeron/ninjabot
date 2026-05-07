@@ -11,23 +11,12 @@ const { token } = require('./config.json');
 // `GatewayIntentBits.Guilds` ensures caches are populated and available
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// When the client is ready, run this code (only once)
-client.once(Events.ClientReady, (readyClient) => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
-
-// Log in to Discord with the client token
-client.login(token);
-
-
 // Create a collection to track commands
 client.commands = new Collection();
-
 // foldersPath scans for command categories, commandFolders
 // checks for command files in said paths
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
-
 // For each command file detected, add them to the command collection
 for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
@@ -45,33 +34,16 @@ for (const folder of commandFolders) {
   }
 }
 
-client.on(Events.InteractionCreate, async (interaction) => {
-  // Ignore if interaction is not a command
-  if (!interaction.isChatInputCommand()) return;
-  // Get matching commands based off interaction.commandName
-  const command = interaction.client.commands.get(interaction.commandName);
+// Event Handler
+const eventsPath = path.join(__dirname, 'events');
+const eventsFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith('.js'));
 
-  // If no command found, log an error
-  if (!command) {
-    console.error(`No command matching ${interaction.commandName} was found`);
-    return;
-  }
+for (const file of eventFiles) {
+  const filePath = path.join(eventsPath, file);
+  const event = require(filePath);
 
-  // Call the command's execute method and log errors that occur
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-      console.error(error);
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({
-          content: 'There was an error while executing this command!',
-          flags: MessageFlags.Ephemeral,
-        });
-      } else {
-        await interaction.reply({
-          content: 'There was an error while executing this command!',
-          flags: MessageFlags.Ephemeral,
-        });
-      }
-  }
-});
+}
+
+
+// Log in to Discord with the client token
+client.login(token);

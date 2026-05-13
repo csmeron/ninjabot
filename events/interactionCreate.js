@@ -43,6 +43,8 @@ module.exports = {
 
     // Call the command's execute method and log errors that occur
     try {
+      timestamps.set(interaction.user.id, now);
+      setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
       await command.execute(interaction);
     } catch (error) {
       console.error(error);
@@ -59,8 +61,6 @@ module.exports = {
       }
     }
 
-    timestamps.set(interaction.user.id, now);
-    setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
 
   },
 };

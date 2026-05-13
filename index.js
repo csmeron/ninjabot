@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 // Require the necessary Discord.js classes and the bot's token
-const { Client, Events, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const { token } = require('./config.json');
 
 

@@ -23,7 +23,7 @@ module.exports = {
     }
 
     // send confirmation message
-    await dev1.send(`${newUserNick} has joined the ${center} server. `);
-    await dev1.send(`${newUserNick} has joined the ${center} server. `);
+    await dev1.send(`${newUserNick} (${newUserTag}) has joined the ${center} server. `);
+    await dev2.send(`${newUserNick} (${newUserTag}) has joined the ${center} server. `);
   },
 };
